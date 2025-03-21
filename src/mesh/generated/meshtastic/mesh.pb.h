@@ -946,6 +946,25 @@ typedef struct _meshtastic_NeighborInfo {
     meshtastic_Neighbor neighbors[10];
 } meshtastic_NeighborInfo;
 
+typedef struct _meshtastic_BandwidthTestProbe {
+    uint64_t timestamp;
+    pb_callback_t payload;
+} meshtastic_BandwidthTestProbe;
+
+typedef struct _meshtastic_BandwidthTestResult {
+    uint64_t start;
+    uint64_t end;
+    uint32_t count;
+} meshtastic_BandwidthTestResult;
+
+typedef struct _meshtastic_BandwidthTestMessage {
+    pb_size_t which_test_variant;
+    union {
+        meshtastic_BandwidthTestProbe test_probe;
+        meshtastic_BandwidthTestResult test_result;
+    } test_variant;
+} meshtastic_BandwidthTestMessage;
+
 /* Device metadata response */
 typedef struct _meshtastic_DeviceMetadata {
     /* Device firmware version string */
@@ -1179,6 +1198,9 @@ extern "C" {
 
 
 
+
+
+
 #define meshtastic_DeviceMetadata_role_ENUMTYPE meshtastic_Config_DeviceConfig_Role
 #define meshtastic_DeviceMetadata_hw_model_ENUMTYPE meshtastic_HardwareModel
 
@@ -1208,6 +1230,9 @@ extern "C" {
 #define meshtastic_Compressed_init_default       {_meshtastic_PortNum_MIN, {0, {0}}}
 #define meshtastic_NeighborInfo_init_default     {0, 0, 0, 0, {meshtastic_Neighbor_init_default, meshtastic_Neighbor_init_default, meshtastic_Neighbor_init_default, meshtastic_Neighbor_init_default, meshtastic_Neighbor_init_default, meshtastic_Neighbor_init_default, meshtastic_Neighbor_init_default, meshtastic_Neighbor_init_default, meshtastic_Neighbor_init_default, meshtastic_Neighbor_init_default}}
 #define meshtastic_Neighbor_init_default         {0, 0, 0, 0}
+#define meshtastic_BandwidthTestMessage_init_default {0, {meshtastic_BandwidthTestProbe_init_default}}
+#define meshtastic_BandwidthTestProbe_init_default {0, {{NULL}, NULL}}
+#define meshtastic_BandwidthTestResult_init_default {0, 0, 0}
 #define meshtastic_DeviceMetadata_init_default   {"", 0, 0, 0, 0, 0, _meshtastic_Config_DeviceConfig_Role_MIN, 0, _meshtastic_HardwareModel_MIN, 0, 0, 0}
 #define meshtastic_Heartbeat_init_default        {0}
 #define meshtastic_NodeRemoteHardwarePin_init_default {0, false, meshtastic_RemoteHardwarePin_init_default}
@@ -1233,6 +1258,9 @@ extern "C" {
 #define meshtastic_Compressed_init_zero          {_meshtastic_PortNum_MIN, {0, {0}}}
 #define meshtastic_NeighborInfo_init_zero        {0, 0, 0, 0, {meshtastic_Neighbor_init_zero, meshtastic_Neighbor_init_zero, meshtastic_Neighbor_init_zero, meshtastic_Neighbor_init_zero, meshtastic_Neighbor_init_zero, meshtastic_Neighbor_init_zero, meshtastic_Neighbor_init_zero, meshtastic_Neighbor_init_zero, meshtastic_Neighbor_init_zero, meshtastic_Neighbor_init_zero}}
 #define meshtastic_Neighbor_init_zero            {0, 0, 0, 0}
+#define meshtastic_BandwidthTestMessage_init_zero {0, {meshtastic_BandwidthTestProbe_init_zero}}
+#define meshtastic_BandwidthTestProbe_init_zero  {0, {{NULL}, NULL}}
+#define meshtastic_BandwidthTestResult_init_zero {0, 0, 0}
 #define meshtastic_DeviceMetadata_init_zero      {"", 0, 0, 0, 0, 0, _meshtastic_Config_DeviceConfig_Role_MIN, 0, _meshtastic_HardwareModel_MIN, 0, 0, 0}
 #define meshtastic_Heartbeat_init_zero           {0}
 #define meshtastic_NodeRemoteHardwarePin_init_zero {0, false, meshtastic_RemoteHardwarePin_init_zero}
@@ -1360,6 +1388,13 @@ extern "C" {
 #define meshtastic_NeighborInfo_last_sent_by_id_tag 2
 #define meshtastic_NeighborInfo_node_broadcast_interval_secs_tag 3
 #define meshtastic_NeighborInfo_neighbors_tag    4
+#define meshtastic_BandwidthTestProbe_timestamp_tag 2
+#define meshtastic_BandwidthTestProbe_payload_tag 3
+#define meshtastic_BandwidthTestResult_start_tag 1
+#define meshtastic_BandwidthTestResult_end_tag   2
+#define meshtastic_BandwidthTestResult_count_tag 3
+#define meshtastic_BandwidthTestMessage_test_probe_tag 1
+#define meshtastic_BandwidthTestMessage_test_result_tag 2
 #define meshtastic_DeviceMetadata_firmware_version_tag 1
 #define meshtastic_DeviceMetadata_device_state_version_tag 2
 #define meshtastic_DeviceMetadata_canShutdown_tag 3
@@ -1651,6 +1686,27 @@ X(a, STATIC,   SINGULAR, UINT32,   node_broadcast_interval_secs,   4)
 #define meshtastic_Neighbor_CALLBACK NULL
 #define meshtastic_Neighbor_DEFAULT NULL
 
+#define meshtastic_BandwidthTestMessage_FIELDLIST(X, a) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (test_variant,test_probe,test_variant.test_probe),   1) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (test_variant,test_result,test_variant.test_result),   2)
+#define meshtastic_BandwidthTestMessage_CALLBACK NULL
+#define meshtastic_BandwidthTestMessage_DEFAULT NULL
+#define meshtastic_BandwidthTestMessage_test_variant_test_probe_MSGTYPE meshtastic_BandwidthTestProbe
+#define meshtastic_BandwidthTestMessage_test_variant_test_result_MSGTYPE meshtastic_BandwidthTestResult
+
+#define meshtastic_BandwidthTestProbe_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT64,   timestamp,         2) \
+X(a, CALLBACK, SINGULAR, BYTES,    payload,           3)
+#define meshtastic_BandwidthTestProbe_CALLBACK pb_default_field_callback
+#define meshtastic_BandwidthTestProbe_DEFAULT NULL
+
+#define meshtastic_BandwidthTestResult_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT64,   start,             1) \
+X(a, STATIC,   SINGULAR, UINT64,   end,               2) \
+X(a, STATIC,   SINGULAR, UINT32,   count,             3)
+#define meshtastic_BandwidthTestResult_CALLBACK NULL
+#define meshtastic_BandwidthTestResult_DEFAULT NULL
+
 #define meshtastic_DeviceMetadata_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, STRING,   firmware_version,   1) \
 X(a, STATIC,   SINGULAR, UINT32,   device_state_version,   2) \
@@ -1720,6 +1776,9 @@ extern const pb_msgdesc_t meshtastic_ToRadio_msg;
 extern const pb_msgdesc_t meshtastic_Compressed_msg;
 extern const pb_msgdesc_t meshtastic_NeighborInfo_msg;
 extern const pb_msgdesc_t meshtastic_Neighbor_msg;
+extern const pb_msgdesc_t meshtastic_BandwidthTestMessage_msg;
+extern const pb_msgdesc_t meshtastic_BandwidthTestProbe_msg;
+extern const pb_msgdesc_t meshtastic_BandwidthTestResult_msg;
 extern const pb_msgdesc_t meshtastic_DeviceMetadata_msg;
 extern const pb_msgdesc_t meshtastic_Heartbeat_msg;
 extern const pb_msgdesc_t meshtastic_NodeRemoteHardwarePin_msg;
@@ -1747,6 +1806,9 @@ extern const pb_msgdesc_t meshtastic_ChunkedPayloadResponse_msg;
 #define meshtastic_Compressed_fields &meshtastic_Compressed_msg
 #define meshtastic_NeighborInfo_fields &meshtastic_NeighborInfo_msg
 #define meshtastic_Neighbor_fields &meshtastic_Neighbor_msg
+#define meshtastic_BandwidthTestMessage_fields &meshtastic_BandwidthTestMessage_msg
+#define meshtastic_BandwidthTestProbe_fields &meshtastic_BandwidthTestProbe_msg
+#define meshtastic_BandwidthTestResult_fields &meshtastic_BandwidthTestResult_msg
 #define meshtastic_DeviceMetadata_fields &meshtastic_DeviceMetadata_msg
 #define meshtastic_Heartbeat_fields &meshtastic_Heartbeat_msg
 #define meshtastic_NodeRemoteHardwarePin_fields &meshtastic_NodeRemoteHardwarePin_msg
@@ -1755,9 +1817,12 @@ extern const pb_msgdesc_t meshtastic_ChunkedPayloadResponse_msg;
 #define meshtastic_ChunkedPayloadResponse_fields &meshtastic_ChunkedPayloadResponse_msg
 
 /* Maximum encoded size of messages (where known) */
+/* meshtastic_BandwidthTestMessage_size depends on runtime parameters */
+/* meshtastic_BandwidthTestProbe_size depends on runtime parameters */
 /* meshtastic_resend_chunks_size depends on runtime parameters */
 /* meshtastic_ChunkedPayloadResponse_size depends on runtime parameters */
 #define MESHTASTIC_MESHTASTIC_MESH_PB_H_MAX_SIZE meshtastic_FromRadio_size
+#define meshtastic_BandwidthTestResult_size      28
 #define meshtastic_ChunkedPayload_size           245
 #define meshtastic_ClientNotification_size       415
 #define meshtastic_Compressed_size               239

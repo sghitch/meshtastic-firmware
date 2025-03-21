@@ -92,6 +92,8 @@
 #include "modules/DropzoneModule.h"
 #endif
 
+#include "modules/BandwidthTestModule.h"
+
 /**
  * Create module instances here.  If you are adding a new module, you must 'new' it here (or somewhere else)
  */
@@ -128,6 +130,8 @@ void setupModules()
 #if !MESHTASTIC_EXCLUDE_ATAK
         atakPluginModule = new AtakPluginModule();
 #endif
+
+        bandwidthTestModule = new BandwidthTestModule();
 
 #if !MESHTASTIC_EXCLUDE_DROPZONE
         dropzoneModule = new DropzoneModule();
@@ -245,6 +249,7 @@ void setupModules()
 #if !MESHTASTIC_EXCLUDE_TRACEROUTE
         traceRouteModule = new TraceRouteModule();
 #endif
+       
     }
     // NOTE! This module must be added LAST because it likes to check for replies from other modules and avoid sending extra
     // acks

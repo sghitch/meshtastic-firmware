@@ -63,6 +63,15 @@ PB_BIND(meshtastic_NeighborInfo, meshtastic_NeighborInfo, AUTO)
 PB_BIND(meshtastic_Neighbor, meshtastic_Neighbor, AUTO)
 
 
+PB_BIND(meshtastic_BandwidthTestMessage, meshtastic_BandwidthTestMessage, AUTO)
+
+
+PB_BIND(meshtastic_BandwidthTestProbe, meshtastic_BandwidthTestProbe, AUTO)
+
+
+PB_BIND(meshtastic_BandwidthTestResult, meshtastic_BandwidthTestResult, AUTO)
+
+
 PB_BIND(meshtastic_DeviceMetadata, meshtastic_DeviceMetadata, AUTO)
 
 
